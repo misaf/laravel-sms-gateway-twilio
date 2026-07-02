@@ -1,13 +1,18 @@
 {
     "name": "misaf/laravel-sms-gateway-twilio",
-    "description": "Twilio driver for misaf/laravel-sms-gateway.",
+    "description": "Twilio SMS gateway driver for Laravel.",
     "type": "library",
     "license": "MIT",
     "keywords": [
         "laravel",
+        "laravel-package",
         "sms",
+        "sms-api",
         "sms-gateway",
-        "twilio"
+        "sms-provider",
+        "sms-driver",
+        "twilio",
+        "twilio-sms"
     ],
     "homepage": "https://github.com/misaf/laravel-sms-gateway-twilio",
     "support": {
