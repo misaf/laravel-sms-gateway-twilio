@@ -24,7 +24,7 @@ final class TwilioSmsGatewayServiceProvider extends PackageServiceProvider
         });
 
         if ($this->app->bound('sms-gateway')) {
-            $this->app->make('sms-gateway')->extend('twilio', fn(): TwilioDriver => $this->app->make(TwilioDriver::class));
+            $this->app->make('sms-gateway')->extend('twilio', fn(Application $app): TwilioDriver => $app->make(TwilioDriver::class));
         }
     }
 }
