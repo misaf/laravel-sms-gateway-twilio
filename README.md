@@ -23,8 +23,21 @@ SMS_GATEWAY_TWILIO_AUTH_TOKEN=your-auth-token
 'twilio' => [
     'account_sid' => env('SMS_GATEWAY_TWILIO_ACCOUNT_SID'),
     'auth_token'  => env('SMS_GATEWAY_TWILIO_AUTH_TOKEN'),
+    'base_url' => env('SMS_GATEWAY_TWILIO_BASE_URL'),
 ],
 ```
+
+By default, the account SID is included in the base URL path. If you override `base_url`, include the account-specific path segment expected by Twilio.
+
+## Driver Behavior
+
+| Option | Value |
+| --- | --- |
+| Driver name | `twilio` |
+| Default base URL | `https://api.twilio.com/2010-04-01/Accounts/{account_sid}/` |
+| `send()` endpoint | `POST Messages.json` |
+| Authentication | HTTP Basic auth from `services.twilio.account_sid` and `services.twilio.auth_token` |
+| Payload | Form data sent directly to Twilio |
 
 ## Usage
 
@@ -32,9 +45,9 @@ SMS_GATEWAY_TWILIO_AUTH_TOKEN=your-auth-token
 use Misaf\LaravelSmsGateway\Facade\SmsGateway;
 
 $response = SmsGateway::driver('twilio')->send([
-    'To'   => '+15551234567',
-    'From' => '+15557654321',
-    'Body' => 'Hello',
+    'To'   => '+15005550006',
+    'From' => '+15005550001',
+    'Body' => 'Here is a test message.',
 ]);
 ```
 

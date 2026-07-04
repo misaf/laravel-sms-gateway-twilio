@@ -17,13 +17,11 @@ test('can send SMS via Twilio driver', function (): void {
         'https://api.twilio.com/2010-04-01/Accounts/AC123/Messages.json' => Http::response($response, 201),
     ]);
 
-    $result = SmsGateway::driver()->request()
-        ->post('Messages.json', [
-            'To'   => '+15005550006',
-            'From' => '+15005550001',
-            'Body' => 'Here is a test message.',
-        ])
-        ->json();
+    $result = SmsGateway::driver()->send([
+        'To'   => '+15005550006',
+        'From' => '+15005550001',
+        'Body' => 'Here is a test message.',
+    ])->json();
 
     Http::assertSent(function (Request $request): bool {
         return 'https://api.twilio.com/2010-04-01/Accounts/AC123/Messages.json' === $request->url()
@@ -42,12 +40,33 @@ test('twilio driver scopes the default gateway to the configured account', funct
     config()->set('services.twilio.auth_token', 'twilio-auth-token');
 
     Http::fake([
-        'https://api.twilio.com/2010-04-01/Accounts/AC456/*' => Http::response(['ok' => true], 200),
+        'https://api.twilio.com/2010-04-01/Accounts/AC456/Messages.json' => Http::response(['ok' => true], 200),
     ]);
 
-    SmsGateway::driver('twilio')->request()->get('Messages.json');
+    SmsGateway::driver('twilio')->send([
+        'To'   => '+15005550006',
+        'From' => '+15005550001',
+        'Body' => 'Here is a test message.',
+    ]);
 
     Http::assertSent(function (Request $request): bool {
         return 'https://api.twilio.com/2010-04-01/Accounts/AC456/Messages.json' === $request->url();
+    });
+});
+
+test('prefers the base URL configured in services over the driver default', function (): void {
+    config()->set('sms_gateway.default', 'twilio');
+    config()->set('services.twilio.base_url', 'https://services-override.example.test/2010-04-01/Accounts/AC123/');
+
+    Http::fake([
+        'https://services-override.example.test/*' => Http::response(['status' => 'queued'], 201),
+    ]);
+
+    SmsGateway::driver()->send([
+        'Body' => 'Hello',
+    ]);
+
+    Http::assertSent(function (Request $request): bool {
+        return 'https://services-override.example.test/2010-04-01/Accounts/AC123/Messages.json' === $request->url();
     });
 });
