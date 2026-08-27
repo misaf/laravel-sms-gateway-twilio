@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
-use Misaf\LaravelSmsGateway\Facade\SmsGateway;
+use Misaf\LaravelSmsGateway\Facades\SmsGateway;
 
 test('can send SMS via Twilio driver', function (): void {
-    config()->set('sms_gateway.default', 'twilio');
-    config()->set('services.twilio.account_sid', 'AC123');
-    config()->set('services.twilio.auth_token', 'twilio-auth-token');
+    config()->set('laravel-sms-gateway.default', 'twilio');
+    config()->set('laravel-sms-gateway-twilio.account_sid', 'AC123');
+    config()->set('laravel-sms-gateway-twilio.auth_token', 'twilio-auth-token');
 
     $response = ['sid' => 'SM123', 'status' => 'queued'];
 
@@ -36,8 +36,8 @@ test('can send SMS via Twilio driver', function (): void {
 });
 
 test('twilio driver scopes the default gateway to the configured account', function (): void {
-    config()->set('services.twilio.account_sid', 'AC456');
-    config()->set('services.twilio.auth_token', 'twilio-auth-token');
+    config()->set('laravel-sms-gateway-twilio.account_sid', 'AC456');
+    config()->set('laravel-sms-gateway-twilio.auth_token', 'twilio-auth-token');
 
     Http::fake([
         'https://api.twilio.com/2010-04-01/Accounts/AC456/Messages.json' => Http::response(['ok' => true], 200),
@@ -54,9 +54,9 @@ test('twilio driver scopes the default gateway to the configured account', funct
     });
 });
 
-test('prefers the base URL configured in services over the driver default', function (): void {
-    config()->set('sms_gateway.default', 'twilio');
-    config()->set('services.twilio.base_url', 'https://services-override.example.test/2010-04-01/Accounts/AC123/');
+test('prefers the base URL configured in the driver config over the driver default', function (): void {
+    config()->set('laravel-sms-gateway.default', 'twilio');
+    config()->set('laravel-sms-gateway-twilio.base_url', 'https://services-override.example.test/2010-04-01/Accounts/AC123/');
 
     Http::fake([
         'https://services-override.example.test/*' => Http::response(['status' => 'queued'], 201),
